@@ -155,6 +155,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="README.md" />
     <None Include="Resources\column_metadata.txt" />
   </ItemGroup>
   <ItemGroup>
