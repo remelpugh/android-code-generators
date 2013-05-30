@@ -1,0 +1,3 @@
+                final String id = uri.getPathSegments().get(1);
+
+                return builder.table({0}){1}.where("{2}." + uriType.getIdColumnName() + " = ?", id);

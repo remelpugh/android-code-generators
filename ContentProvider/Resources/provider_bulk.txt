@@ -1,0 +1,16 @@
+                case {0}: {{
+                    insertStmt = db.compileStatement({1}.getBulkInsertString());
+
+                    for (final ContentValues value : values) {{
+                        {1}.bindValuesInBulkInsert(insertStmt, value);
+                        insertStmt.execute();
+                        insertStmt.clearBindings();
+                    }}
+
+                    insertStmt.close();
+
+                    db.setTransactionSuccessful();
+
+                    numberInserted = values.length;
+                    break;
+                }}

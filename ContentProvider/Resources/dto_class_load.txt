@@ -1,0 +1,5 @@
+
+        index = cursor.getColumnIndex(Columns.{0}.getName());
+        if (index != -1) {{
+            {1}.{2}{3}(cursor.get{4}(index));
+        }}

@@ -1,0 +1,7 @@
+    public {2} {3}{0}() {{
+        return {1};
+    }}
+
+    public void {4}{0}(final {2} value) {{
+        {1} = value;
+    }}

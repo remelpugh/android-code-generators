@@ -1,0 +1,11 @@
+package {0}.{1};
+
+public interface ColumnMetadata {{
+    public int getIndex();
+
+    public Boolean isForeign();
+
+    public String getName();
+
+    public String getType();
+}}

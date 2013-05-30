@@ -1,0 +1,82 @@
+
+	/**
+	 * Created in version {14}
+	 */
+    public static final class {0} extends {1}Contract {{
+        public static final String TABLE_NAME = "{2}";
+        public static final Uri CONTENT_URI = Uri.parse({1}Contract.CONTENT_URI + "/" + TABLE_NAME);
+        public static final String[] PROJECTION = new String[] {{
+{6}
+        }};
+        public static final String TYPE_DIR_TYPE = "vnd.android.cursor.dir/{3}-{4}";
+        public static final String TYPE_ELEM_TYPE = "vnd.android.cursor.item/{3}-{4}";
+    	private static final String LOG_TAG = {0}.class.getSimpleName();
+
+        private {0}() {{
+            // No private constructor
+        }}
+
+        public static void createTable(final SQLiteDatabase db) {{
+            db.execSQL("CREATE TABLE " + TABLE_NAME + " (" + {7}{8} + ");");
+{9}        }}
+
+		// Version {14} : Creation of the table
+{15}        public static void upgradeTable(final SQLiteDatabase db, int oldVersion, final int newVersion) {{
+            if (oldVersion < {14}) {{
+                Log.i(LOG_TAG, "Upgrading from version " + oldVersion + " to " + newVersion + ", data will be lost!");
+
+                db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME + ";");
+                createTable(db);
+                return;
+            }}
+{16}
+            if (oldVersion != newVersion) {{
+                throw new IllegalStateException("Error upgrading the databaseInfo to version " + newVersion);
+            }}
+        }}
+
+        public static enum Columns implements ColumnMetadata {{
+{5};
+            private final Boolean isForeign;
+            private final String name;
+            private final String type;
+
+            private Columns(final String name, final String type) {{
+                this(name, type, false);
+            }}
+
+            private Columns(final String name, final String type, final Boolean isForeign) {{
+                this.isForeign = isForeign;
+                this.name = name;
+                this.type = type;
+            }}
+
+            @Override
+            public int getIndex() {{
+                return ordinal();
+            }}
+
+            @Override
+            public Boolean isForeign() {{
+                return isForeign;
+            }}
+
+            @Override
+            public String getName() {{
+                return name;
+            }}
+
+            @Override
+            public String getType() {{
+                return type;
+            }}
+        }}
+
+        static String getBulkInsertString() {{
+            return new StringBuilder("INSERT INTO ").append(TABLE_NAME).append(" ( "){10}.append(" ) VALUES ({11})").toString();
+        }}
+
+        static void bindValuesInBulkInsert(final SQLiteStatement stmt, final ContentValues values) {{
+            int i = 1;
+{12}{13}        }}
+    }}
