@@ -24,7 +24,7 @@
 
     /// <summary>
     /// </summary>
-    public partial class MainForm : Form {
+    public partial class MainForm: Form {
         private readonly Task<List<String>> _loginTask =
             Task<List<string>>.Factory.StartNew(() => (from x in Settings.Default.Login.Split(',')
                                                        where !x.IsEmpty()
@@ -133,7 +133,7 @@
             var filename = txtJsonFile.Text;
             var schema = await GenerateSchema(filename);
 
-            File.WriteAllText(filename, JsonConvert.SerializeObject(schema, new JsonSerializerSettings {
+            File.WriteAllText(filename, JsonConvert.SerializeObject(schema, new JsonSerializerSettings{
                 ContractResolver = new LowercaseResolver(),
                 DefaultValueHandling = DefaultValueHandling.Ignore,
                 Formatting = Formatting.Indented,
@@ -150,7 +150,7 @@
         private Task<SchemaDescription> GenerateSchema(string filename) {
             return Task.Run(() => {
                 var builder = BuildConnectionString();
-                var schema = new SchemaDescription {
+                var schema = new SchemaDescription{
                     Database = new Database(),
                     Tables = new List<Table>()
                 };
@@ -196,7 +196,7 @@
                         table.Fields = new List<Field>();
 
                         var sql = string.Format("SELECT * FROM [{0}].[{1}]", tableInfo["TABLE_SCHEMA"], name);
-                        var command = new SqlCommand {
+                        var command = new SqlCommand{
                             Connection = connection,
                             CommandText = sql
                         };
@@ -206,7 +206,7 @@
                         }
 
                         if (generateDeviceId) {
-                            var deviceId = new Field {
+                            var deviceId = new Field{
                                 IsId = true,
                                 IsNullable = false,
                                 Name = "DeviceId",
@@ -245,7 +245,7 @@
                             var isIdentity = Convert.ToBoolean(row["IsIdentity"]);
                             var isKey = Convert.ToBoolean(row["IsKey"]);
 
-                            var field = new Field {
+                            var field = new Field{
                                 IsId = !generateDeviceId && (isKey || isIdentity),
                                 IsIndex = generateDeviceId && (isKey || isIdentity),
                                 IsNullable = isNullable == "YES",
@@ -543,22 +543,22 @@
 
                 switch (control.SelectedIndex) {
                     case 0: {
-                            var identity = WindowsIdentity.GetCurrent();
+                        var identity = WindowsIdentity.GetCurrent();
 
-                            if (identity != null) {
-                                cbLogin.Items.Add(identity.Name);
-                                cbLogin.SelectedIndex = 0;
-                            }
-
-                            isEnabled = false;
-                            text = "User name:";
-                            break;
+                        if (identity != null) {
+                            cbLogin.Items.Add(identity.Name);
+                            cbLogin.SelectedIndex = 0;
                         }
+
+                        isEnabled = false;
+                        text = "User name:";
+                        break;
+                    }
                     default: {
-                            isEnabled = true;
-                            text = "Login:";
-                            break;
-                        }
+                        isEnabled = true;
+                        text = "Login:";
+                        break;
+                    }
                 }
 
                 lblLogin.Enabled = isEnabled;
@@ -587,7 +587,7 @@
                 return;
             }
             if (control == cbServerName) {
-                PopulateServerNames(cbServerName.Text);
+                PopulateServerNames();
                 return;
             }
 
@@ -717,7 +717,7 @@
 
         /// <summary>
         /// </summary>
-        private async void PopulateServerNames(string serverName = null) {
+        private async void PopulateServerNames() {
             var task = Task<List<string>>.Factory.StartNew(() => (from x in Settings.Default.ServerNames.Split('|')
                                                                   where !x.IsEmpty()
                                                                   select x).ToList());
