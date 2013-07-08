@@ -379,7 +379,7 @@
     <value>75, 23</value>
   </data>
   <data name="btnUnselect.TabIndex" type="System.Int32, mscorlib">
-    <value>14</value>
+    <value>13</value>
   </data>
   <data name="btnUnselect.Text" xml:space="preserve">
     <value>Select &amp;None</value>
@@ -412,7 +412,7 @@
     <value>75, 23</value>
   </data>
   <data name="btnSelectAll.TabIndex" type="System.Int32, mscorlib">
-    <value>13</value>
+    <value>12</value>
   </data>
   <data name="btnSelectAll.Text" xml:space="preserve">
     <value>&amp;Select All</value>
@@ -442,7 +442,7 @@
     <value>26, 23</value>
   </data>
   <data name="btnJsonFile.TabIndex" type="System.Int32, mscorlib">
-    <value>12</value>
+    <value>16</value>
   </data>
   <data name="btnJsonFile.Text" xml:space="preserve">
     <value>...</value>
@@ -472,7 +472,7 @@
     <value>78, 13</value>
   </data>
   <data name="lblJsonFile.TabIndex" type="System.Int32, mscorlib">
-    <value>2</value>
+    <value>14</value>
   </data>
   <data name="lblJsonFile.Text" xml:space="preserve">
     <value>&amp;JSON File:</value>
@@ -532,7 +532,7 @@
     <value>349, 20</value>
   </data>
   <data name="txtJsonFile.TabIndex" type="System.Int32, mscorlib">
-    <value>1</value>
+    <value>15</value>
   </data>
   <data name="&gt;&gt;txtJsonFile.Name" xml:space="preserve">
     <value>txtJsonFile</value>
@@ -556,7 +556,7 @@
     <value>78, 13</value>
   </data>
   <data name="lblTables.TabIndex" type="System.Int32, mscorlib">
-    <value>1</value>
+    <value>10</value>
   </data>
   <data name="lblTables.Text" xml:space="preserve">
     <value>&amp;Tables:</value>
@@ -853,7 +853,7 @@
     <value>75, 23</value>
   </data>
   <data name="btnGenerateJson.TabIndex" type="System.Int32, mscorlib">
-    <value>10</value>
+    <value>17</value>
   </data>
   <data name="btnGenerateJson.Text" xml:space="preserve">
     <value>&amp;Generate</value>
@@ -1084,16 +1084,16 @@
     <value>&amp;File</value>
   </data>
   <data name="settingsToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>152, 22</value>
+    <value>116, 22</value>
   </data>
   <data name="settingsToolStripMenuItem.Text" xml:space="preserve">
     <value>&amp;Settings</value>
   </data>
   <data name="toolStripMenuItem1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>149, 6</value>
+    <value>113, 6</value>
   </data>
   <data name="exitToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>152, 22</value>
+    <value>116, 22</value>
   </data>
   <data name="exitToolStripMenuItem.Text" xml:space="preserve">
     <value>&amp;Exit</value>

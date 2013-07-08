@@ -1,7 +1,7 @@
 ﻿namespace Dabay6.Android.ContentProvider.Provider {
+
     #region USINGS
 
-    using Extensions;
     using Newtonsoft.Json;
     using Properties;
     using System;
@@ -16,16 +16,13 @@
 
     /// <summary>
     /// </summary>
-    public class PortableSettingsProvider: SettingsProvider {
+    public class PortableSettingsProvider : SettingsProvider {
         private ApplicationSettings _applicationSettings;
 
         /// <summary>
         /// </summary>
         public override string ApplicationName {
             get {
-                //if (!Application.ProductName.IsEmpty()) {
-                //    return Application.ProductName;
-                //}
                 var file = new FileInfo(Application.ExecutablePath);
 
                 return file.Name.Substring(0, file.Name.Length - file.Extension.Length);
@@ -77,8 +74,8 @@
 
             // Create a temporary SettingsPropertyValue to reuse
 
-            // Loop through the list of settings that the application has requested and add them
-            // to our collection of return values.
+            // Loop through the list of settings that the application has requested and add them to
+            // our collection of return values.
             foreach (var value in from SettingsProperty property in collection
                                   select new SettingsPropertyValue(property) {
                                       IsDirty = false,
@@ -132,8 +129,9 @@
 
             try {
                 value = ApplicationSettings.GetType().GetProperty(property.Name).GetValue(_applicationSettings);
-                //// Search for the specific settings node we are looking for in the configuration file.
-                //// If it exists, return the InnerText or InnerXML of its first child node, depending on the setting type.
+                //// Search for the specific settings node we are looking for in the configuration
+                //// file. If it exists, return the InnerText or InnerXML of its first child node,
+                //// depending on the setting type.
 
                 //// If the setting is serialized as a string, return the text stored in the config
                 //if (property.SerializeAs.ToString() == "String") {
@@ -148,14 +146,10 @@
                 //    XmlSerializer xs = new XmlSerializer(typeof(string[]));
                 //    string[] data = (string[])xs.Deserialize(new XmlTextReader(xmlData, XmlNodeType.Element, null));
 
-                //    switch (settingType) {
-                //        case "System.Collections.Specialized.StringCollection":
-                //            StringCollection sc = new StringCollection();
-                //            sc.AddRange(data);
-                //            return sc;
-                //        default:
-                //            return "";
-                //    }
+                // switch (settingType) { case "System.Collections.Specialized.StringCollection":
+                // StringCollection sc = new StringCollection(); sc.AddRange(data); return sc;
+                // default:
+                // return ""; }
                 //}
             }
             catch (Exception) {
@@ -172,11 +166,8 @@
                 //        XmlSerializer xs = new XmlSerializer(typeof(string[]));
                 //        string[] data = (string[])xs.Deserialize(new XmlTextReader(xmlData, XmlNodeType.Element, null));
 
-                //        switch (settingType) {
-                //            case "System.Collections.Specialized.StringCollection":
-                //                StringCollection sc = new StringCollection();
-                //                sc.AddRange(data);
-                //                return sc;
+                // switch (settingType) { case "System.Collections.Specialized.StringCollection":
+                // StringCollection sc = new StringCollection(); sc.AddRange(data); return sc;
 
                 //            default:
                 //                return "";
@@ -193,7 +184,7 @@
 
         private void SaveSettingsFile() {
             var filename = Path.Combine(GetAppPath(), GetSettingsFilename());
-            var settings = new JsonSerializerSettings{
+            var settings = new JsonSerializerSettings {
                 Formatting = Formatting.Indented
             };
 
@@ -219,7 +210,8 @@
                 //// If it exists, return its first child node, (the <value>data here</value> node)
                 //SettingNode = XMLConfig.SelectSingleNode("//setting[@name='" + property.Name + "']").FirstChild;
             }
-            catch (Exception) {
+            catch (Exception ex) {
+                Debug.WriteLine(ex.ToString());
                 //SettingNode = null;
             }
 
@@ -237,36 +229,32 @@
             //else {
             //    // If the value did not already exist in this settings file, create a new entry for this setting
 
-            //    // Search for the application settings node (<Appname.Properties.Settings>) and store it.
-            //    XmlNode tmpNode = XMLConfig.SelectSingleNode("//" + APPNODE);
+            // // Search for the application settings node (<Appname.Properties.Settings>) and store
+            // it. XmlNode tmpNode = XMLConfig.SelectSingleNode("//" + APPNODE);
 
-            //    // Create a new settings node and assign its name as well as how it will be serialized
-            //    XmlElement newSetting = xmlDoc.CreateElement("setting");
-            //    newSetting.SetAttribute("name", property.Name);
+            // // Create a new settings node and assign its name as well as how it will be
+            // serialized XmlElement newSetting = xmlDoc.CreateElement("setting");
+            // newSetting.SetAttribute("name", property.Name);
 
-            //    if (property.Property.SerializeAs.ToString() == "String") {
-            //        newSetting.SetAttribute("serializeAs", "String");
-            //    }
-            //    else {
-            //        newSetting.SetAttribute("serializeAs", "Xml");
-            //    }
+            // if (property.Property.SerializeAs.ToString() == "String") {
+            // newSetting.SetAttribute("serializeAs", "String"); } else {
+            // newSetting.SetAttribute("serializeAs", "Xml"); }
 
-            //    // Append this node to the application settings node (<Appname.Properties.Settings>)
-            //    tmpNode.AppendChild(newSetting);
+            // // Append this node to the application settings node (<Appname.Properties.Settings>)
+            // tmpNode.AppendChild(newSetting);
 
-            //    // Create an element under our named settings node, and assign it the value we are trying to save
-            //    XmlElement valueElement = xmlDoc.CreateElement("value");
-            //    if (property.Property.SerializeAs.ToString() == "String") {
-            //        valueElement.InnerText = property.SerializedValue.ToString();
-            //    }
-            //    else {
-            //        // Write the object to the config serialized as Xml - we must remove the Xml declaration when writing
-            //        // the value, otherwise .Net's configuration system complains about the additional declaration
-            //        valueElement.InnerXml = property.SerializedValue.ToString().Replace(@"<?xml version=""1.0"" encoding=""utf-16""?>", "");
-            //    }
+            // // Create an element under our named settings node, and assign it the value we are
+            // trying to save XmlElement valueElement = xmlDoc.CreateElement("value"); if
+            // (property.Property.SerializeAs.ToString() == "String") { valueElement.InnerText =
+            // property.SerializedValue.ToString(); } else { // Write the object to the config
+            // serialized as Xml - we must remove the Xml declaration when writing // the value,
+            // otherwise .Net's configuration system complains about the additional declaration
+            // valueElement.InnerXml =
+            // property.SerializedValue.ToString().Replace(@"<?xml version=""1.0"" encoding=""utf-16""?>",
+            // ""); }
 
-            //    //Append this new element under the setting node we created above
-            //    newSetting.AppendChild(valueElement);
+            // //Append this new element under the setting node we created above
+            // newSetting.AppendChild(valueElement);
             //}
         }
     }

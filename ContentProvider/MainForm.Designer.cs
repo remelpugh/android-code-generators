@@ -243,6 +243,7 @@
             this.cbLogin.FormattingEnabled = true;
             this.cbLogin.Name = "cbLogin";
             this.cbLogin.DropDown += new System.EventHandler(this.HandleDropDown);
+            this.cbLogin.Leave += new System.EventHandler(this.HandleLeave);
             this.cbLogin.Validating += new System.ComponentModel.CancelEventHandler(this.HandleValidating);
             this.cbLogin.Validated += new System.EventHandler(this.HandleValidated);
             // 
@@ -275,11 +276,14 @@
             // cbServerName
             // 
             resources.ApplyResources(this.cbServerName, "cbServerName");
+            this.cbServerName.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.Suggest;
             this.cbServerName.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.CustomSource;
             this.cbServerName.FormattingEnabled = true;
             this.cbServerName.Name = "cbServerName";
             this.cbServerName.DropDown += new System.EventHandler(this.HandleDropDown);
+            this.cbServerName.SelectedIndexChanged += new System.EventHandler(this.HandleSelectedIndexChanged);
             this.cbServerName.TextChanged += new System.EventHandler(this.HandleTextChanged);
+            this.cbServerName.Leave += new System.EventHandler(this.HandleLeave);
             this.cbServerName.Validating += new System.ComponentModel.CancelEventHandler(this.HandleValidating);
             this.cbServerName.Validated += new System.EventHandler(this.HandleValidated);
             // 

@@ -1,16 +1,15 @@
 ﻿namespace Dabay6.Android.ContentProvider.Extensions {
     #region USINGS
 
-    using Schema;
     using System;
     using System.Data;
+    using Schema;
 
-    #endregion USINGS
+    #endregion
 
     /// <summary>
     /// </summary>
     public static class FieldExtensions {
-
         /// <summary>
         /// </summary>
         /// <param name="field"></param>
@@ -26,6 +25,10 @@
                 }
                 else {
                     switch (type) {
+                        case "bit": {
+                            dbType = DbType.Boolean;
+                            break;
+                        }
                         case "int": {
                             dbType = DbType.Int32;
                             break;
@@ -64,6 +67,10 @@
                     }
                     case DbType.Binary: {
                         field.Type = "blob";
+                        break;
+                    }
+                    case DbType.Boolean: {
+                        field.Type = "boolean";
                         break;
                     }
                     case DbType.Currency:

@@ -1,4 +1,5 @@
 ﻿namespace Dabay6.Android.ContentProvider {
+
     #region USINGS
 
     using Extensions;
@@ -23,11 +24,16 @@
 
     /// <summary>
     /// </summary>
-    public partial class MainForm: Form {
-
-        //private ProgressForm _progressForm;
+    public partial class MainForm : Form {
+        private readonly Task<List<String>> _loginTask =
+            Task<List<string>>.Factory.StartNew(() => (from x in Settings.Default.Login.Split(',')
+                                                       where !x.IsEmpty()
+                                                       select x).ToList());
+        private readonly Task<List<String>> _serverNameTask =
+            Task<List<string>>.Factory.StartNew(() => (from x in Settings.Default.ServerNames.Split('|')
+                                                       where !x.IsEmpty()
+                                                       select x).ToList());
         private int _progressValue;
-
         private DataTable _tables;
 
         /// <summary>
@@ -127,7 +133,7 @@
             var filename = txtJsonFile.Text;
             var schema = await GenerateSchema(filename);
 
-            File.WriteAllText(filename, JsonConvert.SerializeObject(schema, new JsonSerializerSettings{
+            File.WriteAllText(filename, JsonConvert.SerializeObject(schema, new JsonSerializerSettings {
                 ContractResolver = new LowercaseResolver(),
                 DefaultValueHandling = DefaultValueHandling.Ignore,
                 Formatting = Formatting.Indented,
@@ -135,8 +141,6 @@
             }));
 
             await UpdateJsonFileSettings();
-
-            //_progressForm.Close();
         }
 
         /// <summary>
@@ -146,7 +150,7 @@
         private Task<SchemaDescription> GenerateSchema(string filename) {
             return Task.Run(() => {
                 var builder = BuildConnectionString();
-                var schema = new SchemaDescription{
+                var schema = new SchemaDescription {
                     Database = new Database(),
                     Tables = new List<Table>()
                 };
@@ -192,7 +196,7 @@
                         table.Fields = new List<Field>();
 
                         var sql = string.Format("SELECT * FROM [{0}].[{1}]", tableInfo["TABLE_SCHEMA"], name);
-                        var command = new SqlCommand{
+                        var command = new SqlCommand {
                             Connection = connection,
                             CommandText = sql
                         };
@@ -202,7 +206,7 @@
                         }
 
                         if (generateDeviceId) {
-                            var deviceId = new Field{
+                            var deviceId = new Field {
                                 IsId = true,
                                 IsNullable = false,
                                 Name = "DeviceId",
@@ -228,19 +232,20 @@
                             //        break;
                             //    }
 
-                            //    var row = keys.Select(string.Format("ColumnName = '{0}'", columnName)).First();
-                            //    var isIdentity = Convert.ToBoolean(row["IsIdentity"]);
-                            //    var isKey = Convert.ToBoolean(row["IsKey"]);
+                            // var row = keys.Select(string.Format("ColumnName = '{0}'",
+                            // columnName) ).First(); var isIdentity =
+                            // Convert.ToBoolean(row["IsIdentity"]); var isKey =
+                            // Convert.ToBoolean(row["IsKey"]);
 
-                            //    field.IsId = isKey || isIdentity;
-                            //    field.IsUnique = Convert.ToBoolean(row["IsUnique"]);
+                            // field.IsId = isKey || isIdentity; field.IsUnique =
+                            // Convert.ToBoolean(row["IsUnique"]);
                             //}
 
                             var row = keys.Select(string.Format("ColumnName = '{0}'", columnName)).First();
                             var isIdentity = Convert.ToBoolean(row["IsIdentity"]);
                             var isKey = Convert.ToBoolean(row["IsKey"]);
 
-                            var field = new Field{
+                            var field = new Field {
                                 IsId = !generateDeviceId && (isKey || isIdentity),
                                 IsIndex = generateDeviceId && (isKey || isIdentity),
                                 IsNullable = isNullable == "YES",
@@ -321,7 +326,7 @@
                     var table = connection.GetSchema("Databases");
                     var rows = table.Select();
 
-                    names.AddRange(rows.Select(x => x["DATABASE_NAME"].ToString()));
+                    names.AddRange(rows.Select(x => x["DATABASE_NAME"].ToString()).OrderBy(x => x));
                 }
 
                 return names;
@@ -351,7 +356,7 @@
 
                     var rows = _tables.Select();
 
-                    names.AddRange(rows.Select(x => x["TABLE_NAME"].ToString()));
+                    names.AddRange(rows.Select(x => x["TABLE_NAME"].ToString()).Where(x => !x.StartsWith("_")));
                 }
 
                 return names;
@@ -371,8 +376,6 @@
             }
             else if (button == btnGenerateJson) {
                 if (ValidateChildren()) {
-                    //_progressForm = new ProgressForm();
-                    //_progressForm.ShowDialog(this);
                     GenerateJsonFile();
                 }
             }
@@ -438,12 +441,13 @@
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void HandleFormClosing(object sender, FormClosingEventArgs e) {
+        private async void HandleFormClosing(object sender, FormClosingEventArgs e) {
             var settings = Settings.Default;
 
             settings.InputFile = txtInputFile.Text;
             settings.OutputDirectory = txtOutputDirectory.Text;
-            settings.Save();
+
+            await UpdateJsonFileSettings(false);
         }
 
         /// <summary>
@@ -454,12 +458,47 @@
             var settings = Settings.Default;
 
             cbAuthentication.SelectedIndex = 0;
-            cbServerName.Focus();
 
             txtInputFile.Text = settings.InputFile;
             txtOutputDirectory.Text = settings.OutputDirectory;
 
             btnGenerate.Enabled = !(txtInputFile.Text.IsEmpty() && txtOutputDirectory.Text.IsEmpty());
+
+            cbServerName.Select();
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void HandleLeave(object sender, EventArgs e) {
+            var control = sender as ComboBox;
+
+            if (control == null) {
+                return;
+            }
+
+            if (control == cbLogin && cbLogin.Enabled) {
+                if (!control.Text.IsEmpty()) {
+                    var index = control.FindString(control.Text);
+
+                    control.SelectedIndex = index;
+                }
+            }
+
+            if (control == cbServerName) {
+                if (!control.Text.IsEmpty()) {
+                    var index = control.FindString(control.Text);
+
+                    control.SelectedIndex = index;
+                }
+                //for (var i = 0; i < cbServerName.Items.Count; i += 1) {
+                //    var item = cbServerName.Items[i].ToString();
+
+                // if (String.Equals(item, cbServerName.Text,
+                // StringComparison.InvariantCultureIgnoreCase)) { cbServerName.SelectedIndex = i; }
+                //}
+            }
         }
 
         /// <summary>
@@ -504,22 +543,22 @@
 
                 switch (control.SelectedIndex) {
                     case 0: {
-                        var identity = WindowsIdentity.GetCurrent();
+                            var identity = WindowsIdentity.GetCurrent();
 
-                        if (identity != null) {
-                            cbLogin.Items.Add(identity.Name);
-                            cbLogin.SelectedIndex = 0;
+                            if (identity != null) {
+                                cbLogin.Items.Add(identity.Name);
+                                cbLogin.SelectedIndex = 0;
+                            }
+
+                            isEnabled = false;
+                            text = "User name:";
+                            break;
                         }
-
-                        isEnabled = false;
-                        text = "User name:";
-                        break;
-                    }
                     default: {
-                        isEnabled = true;
-                        text = "Login:";
-                        break;
-                    }
+                            isEnabled = true;
+                            text = "Login:";
+                            break;
+                        }
                 }
 
                 lblLogin.Enabled = isEnabled;
@@ -549,7 +588,6 @@
             }
             if (control == cbServerName) {
                 PopulateServerNames(cbServerName.Text);
-                cbServerName.DroppedDown = true;
                 return;
             }
 
@@ -669,26 +707,28 @@
 
             await task;
 
-            cbLogin.Items.Clear();
-            foreach (var name in task.Result) {
-                cbLogin.Items.Add(name);
+            foreach (var x in from name in task.Result
+                              let items = cbLogin.Items.Cast<String>()
+                              where !items.Contains(name)
+                              select name) {
+                cbLogin.Items.Add(x);
             }
         }
 
         /// <summary>
         /// </summary>
-        private async void PopulateServerNames(string filter = null) {
-            var task = Task<List<string>>.Factory.StartNew(() => (from x in Settings.Default.ServerNames.Split(',')
-                                                                  where
-                                                                      !x.IsEmpty() &&
-                                                                      (filter == null || x.Contains(filter))
+        private async void PopulateServerNames(string serverName = null) {
+            var task = Task<List<string>>.Factory.StartNew(() => (from x in Settings.Default.ServerNames.Split('|')
+                                                                  where !x.IsEmpty()
                                                                   select x).ToList());
 
             await task;
 
-            cbServerName.Items.Clear();
-            foreach (var name in task.Result) {
-                cbServerName.Items.Add(name);
+            foreach (var x in from name in task.Result
+                              let items = cbServerName.Items.Cast<String>()
+                              where !items.Contains(name)
+                              select name) {
+                cbServerName.Items.Add(x);
             }
         }
 
@@ -722,36 +762,26 @@
 
         /// <summary>
         /// </summary>
+        /// <param name="displayConfirmation"></param>
         /// <returns></returns>
-        private async Task UpdateJsonFileSettings() {
-            Task<List<string>> loginTask = null;
+        private async Task UpdateJsonFileSettings(bool displayConfirmation = true) {
             var settings = Settings.Default;
 
-            if (cbLogin.Enabled) {
-                loginTask = Task<List<string>>.Factory.StartNew(() => (from x in settings.Login.Split(',')
-                                                                       where !x.IsEmpty()
-                                                                       select x).ToList());
-            }
-
-            var serverNameTask = Task<List<string>>.Factory.StartNew(() => (from x in settings.ServerNames.Split(',')
-                                                                            where !x.IsEmpty()
-                                                                            select x).ToList());
-
-            await serverNameTask;
+            await _serverNameTask;
 
             var currentName = cbServerName.Text;
-            var serverNames = serverNameTask.Result;
+            var serverNames = _serverNameTask.Result;
 
             if (!serverNames.Contains(currentName)) {
                 serverNames.Add(currentName);
             }
 
-            settings.ServerNames = string.Join(",", serverNames);
+            settings.ServerNames = string.Join("|", serverNames);
 
-            if (loginTask != null) {
-                await loginTask;
+            if (cbLogin.Enabled) {
+                await _loginTask;
 
-                var loginNames = loginTask.Result;
+                var loginNames = _loginTask.Result;
 
                 if (!loginNames.Contains(cbLogin.Text)) {
                     loginNames.Add(cbLogin.Text);
@@ -760,13 +790,18 @@
                 settings.Login = string.Join(",", loginNames);
             }
 
-            if (ShowQuestionMessageBox(Resources.GenerateContentProvider) == DialogResult.Yes) {
-                tabStrip.SelectTab(1);
-                txtInputFile.Text = txtJsonFile.Text;
-                btnOpenOutput.PerformClick();
+            if (displayConfirmation) {
+                if (ShowQuestionMessageBox(Resources.GenerateContentProvider) == DialogResult.Yes) {
+                    tabStrip.SelectTab(1);
+                    txtInputFile.Text = txtJsonFile.Text;
+                    btnOpenOutput.PerformClick();
+                }
+                else {
+                    End();
+                }
             }
             else {
-                End();
+                settings.Save();
             }
         }
     }

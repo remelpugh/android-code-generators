@@ -1,7 +1,6 @@
 ﻿namespace Dabay6.Android.ContentProvider.Provider {
-    #region USINGS
 
-    using System.Collections.Generic;
+    #region USINGS
 
     #endregion USINGS
 
@@ -32,7 +31,7 @@
 
         /// <summary>
         /// </summary>
-        public List<string> Login {
+        public string Login {
             get;
             set;
         }
